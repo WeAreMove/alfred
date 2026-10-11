@@ -276,37 +276,37 @@
         "id": "t1",
         "title": "Landing Page",
         "description": "Customer-facing landing page — hero text, CTA buttons, feature descriptions.",
-        "url": "/clients/setur/translation-editor.html?page=landing"
+        "url": "/api/editor?client=setur&page=landing"
       },
       {
         "id": "t2",
         "title": "Offer Page",
         "description": "The offer detail page shown to customers when they view a package.",
-        "url": "/clients/setur/translation-editor.html?page=offer"
+        "url": "/api/editor?client=setur&page=offer"
       },
       {
         "id": "t3",
         "title": "Checkout",
         "description": "Passenger details, services selection, and payment screens.",
-        "url": "/clients/setur/translation-editor.html?solo=checkout"
+        "url": "/api/editor?client=setur&page=checkout"
       },
       {
         "id": "t4",
         "title": "Workspace",
         "description": "The agent workspace — search results, list management, and workspace controls.",
-        "url": "/clients/setur/translation-editor.html?page=workspace"
+        "url": "/api/editor?client=setur&page=workspace"
       },
       {
         "id": "t5",
         "title": "Store Management",
         "description": "Admin panels for managing stores, agents, and settings.",
-        "url": "/clients/setur/translation-editor.html?page=workspace_storemange"
+        "url": "/api/editor?client=setur&page=workspace_storemange"
       },
       {
         "id": "t6",
         "title": "Confirmation Email",
         "description": "The booking confirmation email sent to customers after a successful booking.",
-        "url": "/clients/setur/translation-editor.html?page=cnf_email"
+        "url": "/api/editor?client=setur&page=cnf_email"
       }
     ]
   }

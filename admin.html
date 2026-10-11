@@ -113,6 +113,11 @@
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
           Partner Portals
         </button>
+        <button @click="openTranslationEditor()" class="text-xs font-medium flex items-center gap-1.5 transition-colors"
+          :class="view === 'translationEditor' ? 'text-blue-600 font-semibold' : 'text-slate-500 hover:text-slate-800'">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
+          Translation Editor
+        </button>
         <button @click="openBuilder()" class="text-xs font-medium text-slate-500 hover:text-slate-800 flex items-center gap-1.5 transition-colors">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
           Form Builder
@@ -2154,6 +2159,72 @@
     </div><!-- /flex wrapper -->
   </div><!-- /portals view -->
 
+  <!-- ===== TRANSLATION EDITOR VIEW ===== -->
+  <div x-show="view === 'translationEditor'" class="max-w-2xl mx-auto px-6 py-10">
+
+    <div class="mb-8">
+      <h1 class="text-xl font-bold mb-1" style="color:#152656;">Translation Editor</h1>
+      <p class="text-sm text-slate-500">Upload the translation editor HTML file. All client portals will instantly use the new version.</p>
+    </div>
+
+    <!-- Current version card -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 mb-6" style="box-shadow:0 1px 6px rgba(0,0,0,0.05);">
+      <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Current Version</p>
+      <template x-if="teEditorInfo && teEditorInfo.exists">
+        <div class="space-y-2">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full" style="background:#DCFCE7;color:#16A34A;">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              Uploaded
+            </span>
+          </div>
+          <p class="text-sm text-slate-600">Last updated: <strong x-text="teEditorInfo.uploadedAt ? new Date(teEditorInfo.uploadedAt).toLocaleString() : 'Unknown'"></strong></p>
+          <p class="text-sm text-slate-500">Size: <span x-text="teEditorInfo.size ? Math.round(teEditorInfo.size / 1024) + ' KB' : '—'"></span></p>
+        </div>
+      </template>
+      <template x-if="!teEditorInfo || !teEditorInfo.exists">
+        <div class="flex items-center gap-2 text-sm text-slate-400">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          No editor uploaded yet
+        </div>
+      </template>
+    </div>
+
+    <!-- Upload card -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6" style="box-shadow:0 1px 6px rgba(0,0,0,0.05);">
+      <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Upload New Version</p>
+
+      <div class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center mb-4 transition-colors hover:border-blue-300"
+        @dragover.prevent @drop.prevent="$refs.teFileInput.files = $event.dataTransfer.files">
+        <svg class="w-8 h-8 text-slate-300 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <p class="text-sm text-slate-500 mb-1">Drop your HTML file here or</p>
+        <label class="text-sm font-semibold cursor-pointer" style="color:#3689FB;">
+          Browse files
+          <input type="file" accept=".html,text/html" x-ref="teFileInput" class="hidden"
+            @change="teSelectedFile = $refs.teFileInput.files[0]?.name || ''" />
+        </label>
+        <p x-show="teSelectedFile" class="text-xs text-slate-600 mt-2 font-medium" x-text="teSelectedFile"></p>
+      </div>
+
+      <!-- Success / error feedback -->
+      <div x-show="teStatus === 'ok'" class="flex items-center gap-2 text-sm text-green-600 mb-4 font-medium">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        Editor uploaded successfully. All portals are now using the new version.
+      </div>
+      <div x-show="teStatus && teStatus !== 'ok'" class="flex items-center gap-2 text-sm text-red-500 mb-4" x-text="teStatus"></div>
+
+      <button @click="teUpload()" :disabled="teIsUploading"
+        class="w-full py-3 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-50"
+        style="background:#152656;">
+        <span x-show="!teIsUploading">Upload Editor</span>
+        <span x-show="teIsUploading">Uploading...</span>
+      </button>
+    </div>
+
+  </div><!-- end translationEditor view -->
+
   </div><!-- end authed -->
 
   <style>
@@ -2228,6 +2299,12 @@
         portalLinkCopied: false,
         portalSidePreview: false,
         portalPreviewKey: 1,
+
+        // Translation Editor state
+        teEditorInfo: null,
+        teIsUploading: false,
+        teStatus: '',
+        teSelectedFile: '',
 
         // Release Notes state
         rnReleases: [],
@@ -2651,6 +2728,53 @@
         async openPortals() {
           this.view = 'portals';
           if (this.portalClients.length === 0) await this.loadPortalClients();
+        },
+
+        async openTranslationEditor() {
+          this.view = 'translationEditor';
+          this.teStatus = '';
+          this.teSelectedFile = '';
+          await this.teLoadInfo();
+        },
+
+        async teLoadInfo() {
+          try {
+            const res = await fetch('/api/upload-editor', { headers: this.authH() });
+            this.teEditorInfo = await res.json();
+          } catch { this.teEditorInfo = null; }
+        },
+
+        async teUpload() {
+          const input = this.$refs.teFileInput;
+          const file = input?.files?.[0];
+          if (!file) { this.teStatus = 'Please select an HTML file first.'; return; }
+          const reader = new FileReader();
+          reader.onload = async (e) => {
+            const htmlContent = e.target.result;
+            this.teIsUploading = true;
+            this.teStatus = '';
+            try {
+              const res = await fetch('/api/upload-editor', {
+                method: 'POST',
+                headers: { ...this.authH(), 'Content-Type': 'application/json' },
+                body: JSON.stringify({ htmlContent }),
+              });
+              const data = await res.json();
+              if (data.ok) {
+                this.teStatus = 'ok';
+                this.teEditorInfo = { exists: true, uploadedAt: data.uploadedAt, size: data.size };
+                this.teSelectedFile = '';
+                input.value = '';
+              } else {
+                this.teStatus = data.error || 'Upload failed.';
+              }
+            } catch (err) {
+              this.teStatus = 'Upload failed: ' + err.message;
+            } finally {
+              this.teIsUploading = false;
+            }
+          };
+          reader.readAsText(file, 'utf-8');
         },
 
         async loadPortalClients() {

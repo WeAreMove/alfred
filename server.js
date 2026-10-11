@@ -15,7 +15,7 @@ try {
 } catch {}
 
 const app = express();
-app.use(express.json({ limit: '2mb' }));
+app.use(express.json({ limit: '50mb' }));
 app.use(express.static(__dirname));
 
 // ─── Config ───────────────────────────────────────────────────────────────────
@@ -564,6 +564,24 @@ app.get('/api/portal-public/:clientId', (req, res) => {
   }
 });
 
+// ─── /api/sheet-data ──────────────────────────────────────────────────────────
+app.get('/api/sheet-data', require('./api/sheet-data'));
+
+// ─── /api/page-upload ─────────────────────────────────────────────────────────
+app.all('/api/page-upload', require('./api/page-upload'));
+
+// ─── /api/page-view ───────────────────────────────────────────────────────────
+app.get('/api/page-view', require('./api/page-view'));
+
+// ─── /api/translations ────────────────────────────────────────────────────────
+app.all('/api/translations', require('./api/translations'));
+
+// ─── /api/editor ──────────────────────────────────────────────────────────────
+app.get('/api/editor', require('./api/editor'));
+
+// ─── /api/upload-editor ───────────────────────────────────────────────────────
+app.all('/api/upload-editor', require('./api/upload-editor'));
+
 // ─── GET /api/portal-admin-clients ─────────────────────────────────────────────
 // Returns all clients with their portalConfig (for the admin portals editor)
 app.get('/api/portal-admin-clients', (req, res) => {
@@ -596,6 +614,15 @@ app.put('/api/portal-admin-clients/:clientId', (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// ─── Error handler (returns JSON, not HTML) ────────────────────────────────────
+app.use((err, req, res, next) => {
+  if (err.type === 'entity.too.large') {
+    return res.status(413).json({ error: 'File too large. Maximum size is 50MB.' });
+  }
+  console.error(err);
+  res.status(err.status || 500).json({ error: err.message || 'Internal server error' });
 });
 
 app.listen(PORT, () => console.log(`Move Onboarding server running on port ${PORT}`));
