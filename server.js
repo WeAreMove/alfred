@@ -564,6 +564,9 @@ app.get('/api/portal-public/:clientId', (req, res) => {
   }
 });
 
+// ─── /api/otp ─────────────────────────────────────────────────────────────────
+app.post('/api/otp', require('./api/otp'));
+
 // ─── /api/sheet-data ──────────────────────────────────────────────────────────
 app.get('/api/sheet-data', require('./api/sheet-data'));
 
@@ -581,6 +584,27 @@ app.get('/api/editor', require('./api/editor'));
 
 // ─── /api/upload-editor ───────────────────────────────────────────────────────
 app.all('/api/upload-editor', require('./api/upload-editor'));
+
+// ─── /api/portal-config ───────────────────────────────────────────────────────
+app.all('/api/portal-config', require('./api/portal-config'));
+
+// ─── /api/release-notes ───────────────────────────────────────────────────────
+app.all('/api/release-notes', require('./api/release-notes'));
+
+// ─── /api/templates ───────────────────────────────────────────────────────────
+app.all('/api/templates', require('./api/templates'));
+
+// ─── /api/documents ───────────────────────────────────────────────────────────
+app.all('/api/documents', require('./api/documents'));
+
+// ─── /api/download-excel ──────────────────────────────────────────────────────
+app.get('/api/download-excel', require('./api/download-excel'));
+
+// ─── /api/update-submission ───────────────────────────────────────────────────
+app.all('/api/update-submission', require('./api/update-submission'));
+
+// ─── /api/delete-submission ───────────────────────────────────────────────────
+app.all('/api/delete-submission', require('./api/delete-submission'));
 
 // ─── GET /api/portal-admin-clients ─────────────────────────────────────────────
 // Returns all clients with their portalConfig (for the admin portals editor)

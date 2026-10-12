@@ -46,7 +46,7 @@
       </div>
 
       <!-- Step 2: OTP Code -->
-      <div x-show="otpStep === 2 && !passwordLogin">
+      <div x-show="otpStep === 2">
         <p class="text-xs text-slate-400 mb-6">Enter the 6-digit code sent to <strong x-text="otpEmail"></strong></p>
         <form @submit.prevent="verifyAdminOtp()">
           <input x-model="otpCode" type="text" inputmode="numeric" maxlength="6" placeholder="000000"
@@ -64,32 +64,6 @@
         </form>
       </div>
 
-      <!-- Password login -->
-      <div x-show="passwordLogin">
-        <p class="text-xs text-slate-400 mb-6">Enter the admin password</p>
-        <form @submit.prevent="loginWithPassword()">
-          <input x-model="adminPassword" type="password" placeholder="Admin password"
-            class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm mb-3 focus:outline-none focus:border-blue-400"
-            :class="passwordError ? 'border-red-300' : ''" :disabled="passwordLogging" />
-          <p x-show="passwordError" class="text-xs text-red-500 mb-3" x-text="passwordError"></p>
-          <button type="submit" :disabled="passwordLogging"
-            class="w-full py-3 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-50"
-            style="background:#152656;">
-            <span x-show="!passwordLogging">Login</span>
-            <span x-show="passwordLogging">Logging in...</span>
-          </button>
-          <button type="button" @click="passwordLogin = false; passwordError = ''"
-            class="w-full py-2 mt-2 text-xs text-slate-400 hover:text-slate-600">← Use email verification</button>
-        </form>
-      </div>
-
-      <!-- Toggle to password mode -->
-      <div x-show="!passwordLogin" class="mt-4 pt-4 border-t border-slate-100">
-        <button type="button" @click="passwordLogin = true; otpError = ''"
-          class="w-full text-xs text-slate-400 hover:text-slate-600 transition-colors">
-          Use password instead
-        </button>
-      </div>
     </div>
   </div>
 
@@ -2249,10 +2223,6 @@
         otpSending: false,
         otpVerifying: false,
         otpError: '',
-        passwordLogin: false,
-        adminPassword: '',
-        passwordError: '',
-        passwordLogging: false,
         submissions: [],
         filter: 'all',
         selected: null,
@@ -2423,26 +2393,10 @@
           finally { this.otpVerifying = false; }
         },
 
-        async loginWithPassword() {
-          this.passwordError = '';
-          this.passwordLogging = true;
-          try {
-            const res = await fetch('/api/admin-submissions', {
-              headers: { 'x-admin-password': this.adminPassword },
-            });
-            if (res.status === 401) { this.passwordError = 'Incorrect password'; return; }
-            if (!res.ok) throw new Error('Failed');
-            sessionStorage.setItem('adminPassword', this.adminPassword);
-            this.submissions = await res.json();
-            this.authed = true;
-          } catch (e) { if (!this.passwordError) this.passwordError = 'Network error. Please try again.'; }
-          finally { this.passwordLogging = false; }
-        },
 
         authH() {
           return {
             'x-session-token': sessionStorage.getItem('adminToken') || '',
-            'x-admin-password': sessionStorage.getItem('adminPassword') || '',
           };
         },
 
@@ -2453,8 +2407,7 @@
 
         async init() {
           const saved = sessionStorage.getItem('adminToken');
-          const pw = sessionStorage.getItem('adminPassword');
-          if (saved || pw) { this.authed = true; await this.load(); }
+          if (saved) { this.authed = true; await this.load(); }
         },
 
         async load() {
