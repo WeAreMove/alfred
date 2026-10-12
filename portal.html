@@ -238,7 +238,7 @@
 
         <div style="margin-bottom:16px;padding:14px 18px;background:#fef9c3;border-radius:8px;border:1px solid #fde047;font-size:13px;color:#713f12;">
           <strong data-en="How to edit:" data-tr="Nasıl düzenlenir:">How to edit:</strong>
-          <span data-en=" Open a page → click any highlighted text → type the translation → click Email CSV → send to amiado@wearemove.io" data-tr=" Bir sayfa açın → vurgulanan metne tıklayın → çeviriyi yazın → CSV E-posta'ya tıklayın → amiado@wearemove.io adresine gönderin"> Open a page → click any highlighted text → type the translation → click Email CSV → send to amiado@wearemove.io</span>
+          <span data-en=" Open a page → click any highlighted text → type the translation. Changes save automatically." data-tr=" Bir sayfa açın → vurgulanan metne tıklayın → çeviriyi yazın. Değişiklikler otomatik olarak kaydedilir."> Open a page → click any highlighted text → type the translation. Changes save automatically.</span>
         </div>
 
         <!-- Translation editor page cards — links injected with ?client=X by inline script -->
@@ -490,20 +490,18 @@
 
     // ── Wire up translation editor cards ─────────────────────────────────────
     // Read ?client from URL so links include the correct client scope
-    const clientId = new URLSearchParams(window.location.search).get('client') || '';
-    const clientParam = clientId ? '&client=' + encodeURIComponent(clientId) : '';
-    const editorBase = '/clients/setur/translation-editor.html';
+    const clientId = new URLSearchParams(window.location.search).get('client') || 'setur';
 
     document.querySelectorAll('#translation-cards .card[data-page]').forEach(card => {
       const page = card.dataset.page;
       card.addEventListener('click', () => {
-        window.open(editorBase + '?page=' + page + clientParam, '_blank');
+        window.open('/api/editor?client=' + encodeURIComponent(clientId) + '&page=' + encodeURIComponent(page), '_blank');
       });
     });
     document.querySelectorAll('#translation-cards .card[data-solo]').forEach(card => {
-      const solo = card.dataset.solo;
+      const page = card.dataset.solo;
       card.addEventListener('click', () => {
-        window.open(editorBase + '?solo=' + solo + clientParam, '_blank');
+        window.open('/api/editor?client=' + encodeURIComponent(clientId) + '&page=' + encodeURIComponent(page), '_blank');
       });
     });
   });
