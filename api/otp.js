@@ -66,7 +66,9 @@ async function sendOtpEmail(email, otp) {
     });
     return;
   }
-  throw new Error('No email transport configured. Set RESEND_API_KEY or SMTP_USER/SMTP_PASS.');
+  // Dev fallback — no email transport configured, print code to console
+  console.log(`\n\x1b[43m\x1b[30m OTP CODE FOR ${email} \x1b[0m\n\x1b[1m\x1b[36m  ${otp}  \x1b[0m\n`);
+  return;
 }
 
 module.exports = async function handler(req, res) {
