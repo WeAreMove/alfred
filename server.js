@@ -27,7 +27,7 @@ const SMTP_PASS       = process.env.SMTP_PASS;
 const PORT            = process.env.PORT       || 3000;
 const SUBMISSIONS_DIR = path.join(__dirname, 'submissions');
 
-if (!fs.existsSync(SUBMISSIONS_DIR)) fs.mkdirSync(SUBMISSIONS_DIR);
+try { if (!fs.existsSync(SUBMISSIONS_DIR)) fs.mkdirSync(SUBMISSIONS_DIR); } catch {}
 
 // ─── Shared: send email ────────────────────────────────────────────────────────
 async function sendEmail(partnerName, platform, buffer, filename) {
@@ -409,7 +409,7 @@ app.get('/admin/submissions', (req, res) => {
 
 // ─── GET /admin/clients + /api/admin-clients ──────────────────────────────────
 const CLIENTS_DIR = path.join(__dirname, 'clients');
-if (!fs.existsSync(CLIENTS_DIR)) fs.mkdirSync(CLIENTS_DIR);
+try { if (!fs.existsSync(CLIENTS_DIR)) fs.mkdirSync(CLIENTS_DIR); } catch {}
 
 function checkAdminAuth(req) {
   const adminPassword = process.env.ADMIN_PASSWORD;
